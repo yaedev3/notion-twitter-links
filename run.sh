@@ -5,6 +5,10 @@ case "$1" in
     npm install
   ;;
 
+  'notion')
+    curl http://localhost:3000/export-notion
+  ;;
+
   *)
     npm start
   ;;
