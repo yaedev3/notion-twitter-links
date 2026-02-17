@@ -10,7 +10,7 @@ const notion = new Client({
 
 const DATABASE_ID = process.env.DATABASE_ID as string
 
-async function fetchAllRows(tag: string) {
+const fetchAllRows = async (tag: string, status: boolean) => {
   let results: any[] = []
   let hasMore = true
 
@@ -21,7 +21,7 @@ async function fetchAllRows(tag: string) {
         and: [
           {
             property: 'Downloaded',
-            checkbox: { equals: false },
+            checkbox: { equals: status },
           },
           {
             property: 'Tag',
@@ -35,19 +35,24 @@ async function fetchAllRows(tag: string) {
     hasMore = response.has_more
   }
 
-  return results
+  return convertInformation(results)
 }
 
-export async function exportDatabase(tag: string) {
-  const pages = await fetchAllRows(tag)
-  let rows: string[] = []
+const convertInformation = (notionData: any[]): string[] => {
+  const array = notionData.map((data) => data.properties.link.url)
+  return uniqueValues(array)
+}
 
-  for (const page of pages) {
-    const row = page.properties.Link.url
-    rows.push(row)
-  }
+const uniqueValues = (array: string[]): string[] => {
+  return Array.from(new Set(array))
+}
 
-  rows = Array.from(new Set(rows))
+export const exportDatabase = async (tag: string) => {
+  const [downloaded, pending] = await Promise.all([
+    fetchAllRows(tag, true),
+    fetchAllRows(tag, false),
+  ])
+  const rows = pending.filter((p) => !downloaded.includes(p))
   fs.writeFileSync(`data/${tag}.txt`, rows.join('\n'), 'utf-8')
   console.log(`Exported ${rows.length} rows for tag: ${tag}`)
 }

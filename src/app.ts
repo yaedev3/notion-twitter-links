@@ -13,15 +13,14 @@ app.get(
   '/export-notion',
   async (req: express.Request, res: express.Response) => {
     try {
-      tags.forEach(async (tag) => {
-        await exportDatabase(tag)
-      })
+      const promises = tags.map((tag) => exportDatabase(tag))
+      await Promise.all(promises)
       res.send('Notion data exported successfully.')
     } catch (error) {
       console.error(error)
       res.status(500).send('Error exporting Notion data.')
     }
-  }
+  },
 )
 
 app.listen(3000)
