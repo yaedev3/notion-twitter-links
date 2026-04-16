@@ -40,7 +40,7 @@ export interface Properties {
 export interface CreatedTime {
   id: string
   type: string
-  created_time: Date
+  created_time: string
 }
 
 export interface Downloaded {
@@ -105,4 +105,5 @@ export interface NotionConvertedRow {
   link: string
   downloaded: boolean
   tag: string
+  date: string
 }

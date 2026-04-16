@@ -17,6 +17,10 @@ case "$1" in
     curl http://localhost:3000/convert-database
   ;;
 
+  'clean')
+    curl http://localhost:3000/clean-file
+  ;;
+
   *)
     npm start
   ;;
