@@ -1,6 +1,7 @@
 import express from 'express'
-import { exportDatabase } from './notion-export'
+import { exportAllDataBase, exportFileFromDatabase } from './notion-export'
 import { tags } from './tag'
+import { exportConvertedFile } from './convert'
 
 const app = express()
 
@@ -13,9 +14,35 @@ app.get(
   '/export-notion',
   async (req: express.Request, res: express.Response) => {
     try {
-      const promises = tags.map((tag) => exportDatabase(tag))
+      const promises = tags.map((tag) => exportFileFromDatabase(tag))
       await Promise.all(promises)
       res.send('Notion data exported successfully.')
+    } catch (error) {
+      console.error(error)
+      res.status(500).send('Error exporting Notion data.')
+    }
+  },
+)
+
+app.get(
+  '/export-database',
+  async (req: express.Request, res: express.Response) => {
+    try {
+      await exportAllDataBase()
+      res.send('Notion database exported successfully.')
+    } catch (error) {
+      console.error(error)
+      res.status(500).send('Error exporting Notion data.')
+    }
+  },
+)
+
+app.get(
+  '/convert-database',
+  async (req: express.Request, res: express.Response) => {
+    try {
+      exportConvertedFile()
+      res.send('Notion database converted successfully.')
     } catch (error) {
       console.error(error)
       res.status(500).send('Error exporting Notion data.')
