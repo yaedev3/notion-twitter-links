@@ -21,6 +21,10 @@ case "$1" in
     curl http://localhost:3000/clean-file
   ;;
 
+  'tag')
+    curl http://localhost:3000/package-tag
+  ;;
+
   *)
     npm start
   ;;

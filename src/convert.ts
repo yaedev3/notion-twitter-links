@@ -60,3 +60,19 @@ export const cleanFile = () => {
   console.log(`Data length before cleaning ${data.length}`)
   console.log(`Data length after cleaning ${cleanData.length}`)
 }
+
+export const packageTags = () => {
+  const data = readFile<NotionConvertedRow>(CLEAN_DATABASE_FILE)
+  const tags = new Set([...data.map((d) => d.tag)])
+
+  for (const tag of tags) {
+    const links: NotionConvertedRow[] = data.filter((d) => d.tag === tag)
+    const pending: string[] = links
+      .filter((l) => !l.downloaded)
+      .map((l) => l.link)
+    console.log(
+      `${tag} has ${pending.length} of ${links.length} links to download`,
+    )
+    fs.writeFileSync(`data/${tag}.txt`, pending.join('\n'), 'utf-8')
+  }
+}
